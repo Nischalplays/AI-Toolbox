@@ -1,0 +1,77 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 10px;
+  width: 280px;
+  background: #ffffff;
+}
+
+h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+#searchBox {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px;
+  background: #f8f8f8;
+  margin: 6px 0;
+  cursor: pointer;
+}
+
+.card:hover {
+  background: #e7e7e7;
+}
+
+.card .title {
+  font-weight: bold;
+}
+
+.tags {
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background: #d9eaff;
+  border: 1px solid #a3c8ff;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+#toolList {
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.pagination button {
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pagination button:hover {
+  background: #f2f2f2;
+}

@@ -1,0 +1,316 @@
+/*********************************
+ AI Toolbox – HOME.JS (stable icon + favorites + trending + modal + pricing)
+**********************************/
+
+// ===== DOM =====
+const container = document.getElementById("toolContainer");
+const searchInput = document.getElementById("searchInput");
+const categoryBar = document.getElementById("categories");
+
+// MODAL
+const modal = document.getElementById("toolModal");
+const modalClose = document.getElementById("modalClose");
+const modalIcon = document.getElementById("modalIcon");
+const modalTitle = document.getElementById("modalTitle");
+const modalTags = document.getElementById("modalTags");
+const modalFav = document.getElementById("modalFav");
+const modalVisit = document.getElementById("modalVisit");
+
+// ===== DATA =====
+const tools = window.AI_TOOLS;
+let activeCategory = "All";
+let favorites = [];
+
+/* ===============================
+   THEME
+================================ */
+let theme = "light";
+
+// Load theme from storage
+chrome.storage.local.get(["theme"], res => {
+  theme = res.theme || "light";
+  applyTheme();
+});
+
+// Toggle theme
+document.getElementById("themeToggle").onclick = () => {
+  theme = theme === "light" ? "dark" : "light";
+  chrome.storage.local.set({ theme });
+  applyTheme();
+};
+
+function applyTheme() {
+  document.body.className = theme;
+  const btn = document.getElementById("themeToggle");
+  btn.textContent = theme === "light" ? "🌙" : "☀️";
+}
+
+/* ===============================
+   SVG fallback icon
+================================ */
+const FALLBACK_ICON =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
+       <rect width="100%" height="100%" rx="16" ry="16" fill="#e6e9ef"/>
+       <text x="50%" y="55%" text-anchor="middle"
+             font-family="Arial" font-size="44"
+             font-weight="700" fill="#4a5568">AI</text>
+     </svg>`
+  );
+
+/* ===============================
+   Build category list
+================================ */
+const categories = ["All", "🔥 Trending", "⭐ Favorites"];
+
+tools.forEach(t => {
+  t.tags.forEach(tag => {
+    if (!categories.includes(tag)) categories.push(tag);
+  });
+});
+
+/* ===============================
+   Save favorites
+================================ */
+function saveFavorites() {
+  chrome.storage.local.set({ favorites });
+}
+
+/* ===============================
+   Render Categories
+================================ */
+function renderCategories() {
+  categoryBar.innerHTML = "";
+
+  const LABELS = {
+    "🔥 Trending": { cls: "trending" },
+    "⭐ Favorites": { cls: "favorites" }
+  };
+
+  categories.forEach(c => {
+    const btn = document.createElement("div");
+    btn.textContent = c;
+    btn.classList.add("category-btn");
+
+    if (LABELS[c]) btn.classList.add(LABELS[c].cls);
+    if (c === activeCategory) btn.classList.add("active");
+
+    btn.onclick = () => {
+      activeCategory = c;
+      renderCategories();
+      renderTools();
+    };
+
+    categoryBar.appendChild(btn);
+  });
+}
+
+/* ===============================
+   STABLE ICON HANDLER
+================================ */
+function buildIcon(tool) {
+  const img = document.createElement("img");
+  img.className = "tool-icon";
+
+  const sources = [];
+
+  if (tool.icon && tool.icon.startsWith("http")) {
+    sources.push(tool.icon);
+  }
+
+  const SAFE_FAVICON_DOMAINS = [
+    "openai.com",
+    "claude.ai",
+    "gemini.google.com",
+    "perplexity.ai",
+    "midjourney.com",
+    "bing.com",
+    "fotor.com",
+    "vanceai.com",
+    "topazlabs.com",
+    "replit.com",
+    "github.com"
+  ];
+
+  try {
+    const origin = new URL(tool.url).origin;
+    if (SAFE_FAVICON_DOMAINS.some(d => origin.includes(d))) {
+      sources.push(`${origin}/favicon.ico`);
+    }
+  } catch (e) {}
+
+  sources.push(FALLBACK_ICON);
+
+  let i = 0;
+  function tryNext() {
+    if (i >= sources.length) {
+      img.src = FALLBACK_ICON;
+      return;
+    }
+    img.src = sources[i++];
+  }
+
+  img.onerror = () => tryNext();
+  tryNext();
+
+  return img;
+}
+
+/* ===============================
+   OPEN MODAL
+================================ */
+function openToolModal(tool) {
+  modalTitle.textContent = tool.name;
+  modalIcon.src = tool.icon || FALLBACK_ICON;
+
+  modalTags.innerHTML = "";
+  // TAGS
+  tool.tags.forEach(tag => {
+    const t = document.createElement("span");
+    t.className = "tag";
+    t.textContent = tag;
+    modalTags.appendChild(t);
+  });
+
+  // PRICING
+  const pricing = tool.pricing || "free";
+  const modalPrice = document.createElement("span");
+  modalPrice.className = `pricing-tag ${pricing}`;
+  modalPrice.textContent = pricing;
+  modalTags.appendChild(modalPrice);
+
+  // Favorite state
+  const isFav = favorites.includes(tool.name);
+  modalFav.textContent = isFav ? "★ Remove Favorite" : "☆ Add Favorite";
+
+  modalFav.onclick = () => {
+    if (isFav) {
+      favorites = favorites.filter(f => f !== tool.name);
+    } else {
+      favorites.push(tool.name);
+    }
+    saveFavorites();
+    renderTools();
+    openToolModal(tool);
+  };
+
+  modalVisit.onclick = () => {
+    window.open(tool.url, "_blank");
+  };
+
+  modal.classList.remove("hidden");
+}
+
+/* MODAL CLOSE */
+modalClose.onclick = () => modal.classList.add("hidden");
+modal.onclick = (e) => {
+  if (e.target === modal) modal.classList.add("hidden");
+};
+
+/* ===============================
+   Render Tools
+================================ */
+function renderTools() {
+  container.innerHTML = "";
+  const q = searchInput.value.toLowerCase();
+
+  const filtered = tools.filter(tool => {
+    const matchesText =
+      tool.name.toLowerCase().includes(q) ||
+      tool.tags.some(t => t.toLowerCase().includes(q));
+
+    if (activeCategory === "⭐ Favorites") {
+      return favorites.includes(tool.name) && matchesText;
+    }
+
+    if (activeCategory === "🔥 Trending") {
+      return tool.trending && matchesText;
+    }
+
+    const matchesCategory =
+      activeCategory === "All" || tool.tags.includes(activeCategory);
+
+    return matchesText && matchesCategory;
+  });
+
+  filtered.forEach(tool => {
+    const card = document.createElement("div");
+    card.className = "tool-card";
+
+    if (tool.trending) card.classList.add("trending");
+
+    // ICON
+    const img = buildIcon(tool);
+
+    // TEXT BOX
+    const textBox = document.createElement("div");
+    textBox.className = "tool-text";
+
+    const title = document.createElement("div");
+    title.className = "tool-title";
+    title.textContent = tool.name;
+
+    // TAGS
+    const tagsBox = document.createElement("div");
+    tagsBox.className = "tags";
+
+    tool.tags.forEach(tag => {
+      const t = document.createElement("span");
+      t.className = "tag";
+      t.textContent = tag;
+      tagsBox.appendChild(t);
+    });
+
+    // PRICING (auto default → free)
+    const pricing = tool.pricing || "free";
+    const price = document.createElement("span");
+    price.className = `pricing-tag ${pricing}`;
+    price.textContent = pricing;
+    tagsBox.appendChild(price);
+
+    // FAVORITE BUTTON
+    const favBtn = document.createElement("div");
+    favBtn.className = "fav-btn";
+    const isFav = favorites.includes(tool.name);
+    favBtn.textContent = isFav ? "⭐" : "☆";
+    if (isFav) favBtn.classList.add("active");
+
+    favBtn.onclick = (e) => {
+      e.stopPropagation();
+      if (isFav) {
+        favorites = favorites.filter(f => f !== tool.name);
+      } else {
+        favorites.push(tool.name);
+      }
+      saveFavorites();
+      renderTools();
+    };
+
+    textBox.appendChild(title);
+    textBox.appendChild(tagsBox);
+
+    card.appendChild(img);
+    card.appendChild(textBox);
+    card.appendChild(favBtn);
+
+    // Click → modal
+    card.onclick = () => openToolModal(tool);
+
+    container.appendChild(card);
+  });
+}
+
+/* ===============================
+   SEARCH
+================================ */
+searchInput.addEventListener("input", renderTools);
+
+/* ===============================
+   INIT
+================================ */
+chrome.storage.local.get(["favorites"], res => {
+  favorites = res.favorites || [];
+  renderCategories();
+  renderTools();
+});
