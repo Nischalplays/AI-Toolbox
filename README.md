@@ -1,2 +1,1 @@
-# AI-Toolbox
-AI tool browser extension
+"AI-ToolBox" 
