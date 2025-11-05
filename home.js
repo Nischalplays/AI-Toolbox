@@ -2,6 +2,11 @@
  AI Toolbox – HOME.JS (stable icon + favorites + trending + modal + pricing)
 **********************************/
 
+// ====== PREVENTING DEFAULT RIGHT CLICK =========
+document.body.addEventListener("contextmenu", (e) => {
+  e.preventDefault();
+})
+
 // ===== DOM =====
 const container = document.getElementById("toolContainer");
 const searchInput = document.getElementById("searchInput");
@@ -99,7 +104,7 @@ function renderCategories() {
     btn.onclick = () => {
       activeCategory = c;
       renderCategories();
-      renderTools();
+      renderTools(); // need to change 
     };
 
     categoryBar.appendChild(btn);
@@ -138,7 +143,7 @@ function buildIcon(tool) {
     if (SAFE_FAVICON_DOMAINS.some(d => origin.includes(d))) {
       sources.push(`${origin}/favicon.ico`);
     }
-  } catch (e) {}
+  } catch (e) { }
 
   sources.push(FALLBACK_ICON);
 
@@ -160,7 +165,7 @@ function buildIcon(tool) {
 /* ===============================
    OPEN MODAL
 ================================ */
-function openToolModal(tool) {
+function openToolModal(tool, card) {
   modalTitle.textContent = tool.name;
   modalIcon.src = tool.icon || FALLBACK_ICON;
 
@@ -176,7 +181,7 @@ function openToolModal(tool) {
   // PRICING
   const pricing = tool.pricing || "free";
   const modalPrice = document.createElement("span");
-  modalPrice.className = `pricing-tag ${pricing}`;
+  modalPrice.className = `pricing tag ${pricing}`;
   modalPrice.textContent = pricing;
   modalTags.appendChild(modalPrice);
 
@@ -185,14 +190,8 @@ function openToolModal(tool) {
   modalFav.textContent = isFav ? "★ Remove Favorite" : "☆ Add Favorite";
 
   modalFav.onclick = () => {
-    if (isFav) {
-      favorites = favorites.filter(f => f !== tool.name);
-    } else {
-      favorites.push(tool.name);
-    }
-    saveFavorites();
-    renderTools();
-    openToolModal(tool);
+    favCard(card);
+    modalFav.textContent = favorites.includes(tool.name) ? "★ Remove Favorite" : "☆ Add Favorite";
   };
 
   modalVisit.onclick = () => {
@@ -265,7 +264,7 @@ function renderTools() {
     // PRICING (auto default → free)
     const pricing = tool.pricing || "free";
     const price = document.createElement("span");
-    price.className = `pricing-tag ${pricing}`;
+    price.className = `tag pricing ${pricing}`;
     price.textContent = pricing;
     tagsBox.appendChild(price);
 
@@ -278,14 +277,8 @@ function renderTools() {
 
     favBtn.onclick = (e) => {
       e.stopPropagation();
-      if (isFav) {
-        favorites = favorites.filter(f => f !== tool.name);
-      } else {
-        favorites.push(tool.name);
-      }
-      saveFavorites();
-      renderTools();
-    };
+      favCard(card)
+    }
 
     textBox.appendChild(title);
     textBox.appendChild(tagsBox);
@@ -295,16 +288,71 @@ function renderTools() {
     card.appendChild(favBtn);
 
     // Click → modal
-    card.onclick = () => openToolModal(tool);
+    card.onmousedown = (event) => {
+      if (event.target.closest('.fav-btn')) return;
+      if (event.button === 0) {
+        openToolModal(tool, card)
+      }
+      else if (event.button === 2) {
+        favCard(card);
+      }
+    };
 
     container.appendChild(card);
   });
 }
 
+// ======== Fav Crad ========
+
+function favCard(card) {
+  const cardTitle = card.querySelector('.tool-title');
+  const favBtn = card.querySelector('.fav-btn');
+  const currentCategory = categoryBar
+    .querySelector(".active")
+    .textContent
+    .toLowerCase();
+
+  let isFav = favBtn.classList.contains("active");
+
+  if (isFav) {
+    favorites = favorites.filter(f => f !== cardTitle.textContent);
+    favBtn.textContent = "☆";
+    favBtn.classList.remove("active");
+
+    console.log("hello")
+    if (currentCategory.includes("favorites")|| currentCategory.includes("favourites")) {
+      card.remove();
+    }
+  }
+  else {
+    favorites.push(cardTitle.textContent);
+    favBtn.textContent = "⭐";
+    favBtn.classList.add("active");
+  }
+  console.log(currentCategory)
+  saveFavorites();
+}
+
+/* ============================
+    FILTER TOOL
+==============================*/
+function filterTools(){
+  const q = searchInput.value.toLowerCase();
+
+  document.querySelectorAll(".tool-card").forEach(card =>{
+    const title = card.querySelector(".tool-title").textContent.toLowerCase();
+    const tags = Array.from(card.querySelectorAll(".tag")).map(t => t.textContent.toLowerCase());
+
+    const matches = title.includes(q) || tags.some(tag => tag.includes(q));
+
+    card.style.display = matches ? "" : "none";
+  })
+}
+
 /* ===============================
    SEARCH
 ================================ */
-searchInput.addEventListener("input", renderTools);
+searchInput.addEventListener("input", filterTools);
 
 /* ===============================
    INIT
