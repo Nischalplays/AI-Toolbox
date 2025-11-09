@@ -10,7 +10,10 @@ document.body.addEventListener("contextmenu", (e) => {
 // ===== DOM =====
 const container = document.getElementById("toolContainer");
 const searchInput = document.getElementById("searchInput");
-const categoryBar = document.getElementById("categories");
+const categoryBar = document.getElementById("filter-btns");
+const sortBar = document.getElementById("sort-content");
+const filterBtn = document.getElementById("filter")
+const filterWin = document.getElementById("filter-win");
 
 // MODAL
 const modal = document.getElementById("toolModal");
@@ -20,11 +23,14 @@ const modalTitle = document.getElementById("modalTitle");
 const modalTags = document.getElementById("modalTags");
 const modalFav = document.getElementById("modalFav");
 const modalVisit = document.getElementById("modalVisit");
+const modalSortBtns = sortBar.querySelectorAll(".sort-btn");
 
 // ===== DATA =====
 const tools = window.AI_TOOLS;
 let activeCategory = "All";
 let favorites = [];
+let sortEventAdded = false;
+let filterWinOpen = false;
 
 /* ===============================
    THEME
@@ -48,6 +54,32 @@ function applyTheme() {
   document.body.className = theme;
   const btn = document.getElementById("themeToggle");
   btn.textContent = theme === "light" ? "🌙" : "☀️";
+}
+
+function sortEvent() {
+  if (sortEventAdded != false) return;
+  
+  modalSortBtns.forEach((btn, index) => {
+    btn.addEventListener("click", ()=> {
+      const currenActive = sortBar.querySelector(".active");
+      currenActive.classList.remove("active");
+      btn.classList.add("active");
+    })
+  })
+  sortEventAdded = true;
+} 
+
+function filterEvent(){
+  filterBtn.addEventListener("click", ()=>{
+    if (filterWinOpen){
+      filterWin.classList.remove("active");
+      filterWinOpen = false
+    }
+    else{
+      filterWin.classList.add("active");
+      filterWinOpen = true;
+    }
+  })
 }
 
 /* ===============================
@@ -212,6 +244,8 @@ modal.onclick = (e) => {
 ================================ */
 function renderTools() {
   container.innerHTML = "";
+  filterEvent();
+  sortEvent();
   const q = searchInput.value.toLowerCase();
 
   const filtered = tools.filter(tool => {

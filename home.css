@@ -24,168 +24,6 @@ header {
   margin: 0 auto;
 }
 
-#searchInput {
-  padding: 12px;
-  width: 100%;
-  font-size: 16px;
-}
-
-.categories {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.category-btn {
-  padding: 6px 12px;
-  border-radius: 20px;
-  border: 1px solid #aaa;
-  background: #ffffff;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.category-btn.active {
-  background: #0d6efd;
-  color: white;
-  border-color: #0d6efd;
-}
-
-.grid {
-  max-width: 1100px;
-  margin: 20px auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 12px;
-}
-
-.tool-card {
-  background: white;
-  border-radius: 10px;
-  padding: 12px;
-  border: 1px solid #ddd;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.tool-card:hover {
-  background: #eef3ff;
-}
-
-.tool-card {
-  background: white;
-  border-radius: 10px;
-  padding: 12px;
-  border: 1px solid #ddd;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.tool-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.fav-btn {
-  margin-left: auto;
-  font-size: 18px;
-  cursor: pointer;
-  opacity: 0.6;
-}
-
-.fav-btn.active {
-  color: gold;
-  opacity: 1;
-}
-
-.tool-card.trending {
-  border: 2px solid #ff9800;
-}
-
-.tool-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.fav-btn {
-  margin-left: auto;
-  font-size: 18px;
-  cursor: pointer;
-  opacity: 0.6;
-}
-
-.fav-btn.active {
-  color: gold;
-  opacity: 1;
-}
-
-/* CATEGORY BAR CONTAINER */
-.category-container {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 8px 4px;
-  scrollbar-width: none; /* Firefox */
-}
-
-.category-container::-webkit-scrollbar {
-  display: none; /* Chrome */
-}
-
-/* CATEGORY BUTTONS */
-.category-btn {
-  padding: 6px 14px;
-  border-radius: 20px;
-  border: 1px solid #dadce0;
-  font-size: 14px;
-  background: #fff;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.18s ease;
-}
-
-/* Hover */
-.category-btn:hover {
-  background:#f5f6f7;
-  transform: translateY(-1px);
-}
-
-/* Active Category */
-.category-btn.active {
-  background: #1a73e83d;
-  border: 1px solid #1a73e8;
-  color: #1a73e8;
-  font-weight: 600;
-  box-shadow: 0 0 0 3px #1a73e81a;
-}
-
-.category-btn.trending {
-  background:#fff7e6;
-  border-color:#ffb84d;
-  color:#e69500;
-}
-
-.category-btn.favorites {
-  background:#fff9dc;
-  border-color:#ffd54f;
-  color:#c59f00;
-}
-
-.category-btn {
-  padding: 6px 14px;
-  border-radius: 9999px;
-  border: 1px solid #cfcfcf;
-  background:#fafafa;
-}
-
 /********************************
    GLASS SEARCH BAR (APPLE STYLE)
 *********************************/
@@ -196,29 +34,48 @@ header {
   margin: 18px auto 22px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
+  gap: 10px;
 }
 
 /* input box */
 #searchInput {
   width: 100%;
+  height: 25px;
   padding: 12px 48px;
   border-radius: 14px;
   font-size: 16px;
-  border: 1px solid rgba(255,255,255,0.25);
-  background: rgba(255,255,255,0.35);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   outline: none;
   transition: all 0.25s ease;
   color: #2a2a2a;
-  
-  /* subtle inset shadow */
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25), 
-              0 4px 18px rgba(0,0,0,0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25),
+    0 4px 18px rgba(0, 0, 0, 0.08);
 }
 
-/* search icon */
+#searchInput::placeholder {
+  color: #777;
+  font-weight: 400;
+}
+
+#searchInput:hover {
+  background: rgba(255, 255, 255, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+    0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+#searchInput:focus {
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(26, 115, 232, 0.6),
+    0 0 0 4px rgba(26, 115, 232, 0.15),
+    0 6px 18px rgba(0, 0, 0, 0.12);
+  border-color: rgba(26, 115, 232, 0.6);
+  transform: scale(1.01);
+}
+
 .search-icon {
   position: absolute;
   left: 18px;
@@ -228,76 +85,227 @@ header {
   transition: 0.25s ease;
 }
 
-/* placeholder styling */
-#searchInput::placeholder {
-  color: #777;
-  font-weight: 400;
-}
-
-/* hover */
-#searchInput:hover {
-  background: rgba(255,255,255,0.45);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.4), 
-              0 6px 18px rgba(0,0,0,0.12);
-}
-
-/* focus effect */
-#searchInput:focus {
-  background: rgba(255,255,255,0.6);
-  box-shadow: inset 0 0 0 1px rgba(26,115,232,0.6), 
-              0 0 0 4px rgba(26,115,232,0.15),
-              0 6px 18px rgba(0,0,0,0.12);
-  border-color: rgba(26,115,232,0.6);
-}
-
-/* focus icon animation */
 .search-glass:focus-within .search-icon {
   opacity: 0.85;
   transform: scale(1.12);
 }
 
-#searchInput:focus {
-  transform: scale(1.01);
+/********************************
+   CATEGORY BAR
+*********************************/
+.category-container {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 4px;
+  scrollbar-width: none;
 }
 
-body.dark #searchInput {
-  background: rgba(40,40,40,0.55);
-  color: #f1f1f1;
-  border-color: rgba(255,255,255,0.15);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
+.category-container::-webkit-scrollbar {
+  display: none;
 }
 
-body.dark #searchInput::placeholder {
-  color: #bbb;
+/* CATEGORY BUTTONS */
+.category-btn {
+  padding: 2px 4px;
+  color: #4e4e4eb8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid #cfcfcf;
+  background: #fafafa;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s ease;
 }
 
-/****************************************
-   TOOL CARD — PREMIUM
-*****************************************/
+.category-btn:hover {
+  background: #f5f6f7;
+  color: black;
+  transform: translateY(-1px);
+}
+
+.category-btn.active {
+  background: #1a73e83d;
+  border: 1px solid #1a73e8;
+  color: #1a73e8;
+  font-weight: 600;
+  box-shadow: 0 0 0 3px #1a73e81a;
+}
+
+.category-btn.trending {
+  background: #fff7e6;
+  border-color: #ffb84d;
+  color: #e69500;
+}
+
+.category-btn.favorites {
+  background: #fff9dc;
+  border-color: #ffd54f;
+  color: #c59f00;
+}
+
+/********************************
+   FILTER WINDOW
+*********************************/
+#filter-win {
+  display: none;
+  width: 100%;
+  height: 310px;
+  /* background: #e4e4e4; */
+  justify-content: space-evenly;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+#filter-win.active {
+  display: flex;
+  opacity: 1;
+}
+
+#sort-content {
+  width: 28%;
+  height: 90%;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  border-radius: 14px;
+  border: 1px solid #cecece;
+}
+
+#filter-content {
+  width: 68%;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 14px;
+  overflow-x: auto;
+  border: 1px solid #cecece;
+}
+
+.filter-heading {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+}
+
+#filter-btns {
+  width: 100%;
+  height: calc(100% - 40px);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+
+}
+
+.sort-btn {
+  width: 90%;
+  height: 30px;
+  font-size: 16px;
+  border: 1px solid #cfcfcf;
+  border-radius: 8px;
+  font-weight: bold;
+  color: #4e4e4eb8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.sort-btn:hover {
+  background: #f5f6f7;
+  color: black;
+  transform: translateY(-1px);
+}
+
+.sort-btn.active {
+  background: #1a73e83d;
+  border: 1px solid #1a73e8;
+  color: #1a73e8;
+}
+
+body.dark #filter-win {
+  /* background: rgba(40, 40, 40, 0.55); */
+}
+
+body.dark #filter-content {
+  background: rgba(30, 30, 35, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+body.dark #sort-content {
+  background: rgba(30, 30, 35, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+body.dark .sort-btn {
+  color: #dcdcdcb8;
+}
+
+
+body.dark .sort-btn:hover {
+  color: white;
+  background: none;
+  box-shadow: 2px 4px 6px rgba(255, 255, 255, 0.4);
+}
+
+body.dark .sort-btn.active {
+  background: #1a73e83d;
+  border-color: #1a73e8;
+  color: #fff;
+}
+
+/********************************
+   GRID + TOOL CARD
+*********************************/
+.grid {
+  max-width: 1100px;
+  margin: 20px auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
 
 .tool-card {
   display: flex;
   align-items: center;
   gap: 14px;
   padding: 14px 16px;
-  background: rgba(255,255,255,0.55);
+  background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(200,200,200,0.25);
+  border: 1px solid rgba(200, 200, 200, 0.25);
   border-radius: 16px;
   cursor: pointer;
   transition: all 0.25s ease;
-  box-shadow: 
-    inset 0 0 0 1px rgba(255,255,255,0.3),
-    0 4px 14px rgba(0,0,0,0.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+    0 4px 14px rgba(0, 0, 0, 0.06);
 }
 
 .tool-card:hover {
   transform: translateY(-3px);
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.3),
-    0 6px 20px rgba(0,0,0,0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+    0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
+.tool-card.trending {
+  border: 1px solid #ffb94d;
+  box-shadow: 0 0 0 3px rgba(255, 180, 70, 0.15),
+    0 6px 20px rgba(255, 150, 30, 0.08);
+}
 
 /*********** ICON ************/
 .tool-icon {
@@ -306,11 +314,10 @@ body.dark #searchInput::placeholder {
   border-radius: 12px;
   object-fit: cover;
   background: #fff;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
 }
 
-
-/*********** TEXT SIDE ************/
+/*********** TEXT ************/
 .tool-text {
   display: flex;
   flex-direction: column;
@@ -324,7 +331,6 @@ body.dark #searchInput::placeholder {
   color: #111;
   text-align: center;
 }
-
 
 /*********** TAGS ************/
 .tags {
@@ -340,10 +346,9 @@ body.dark #searchInput::placeholder {
   border-radius: 10px;
   background: #e8ecf1;
   color: #000000ab;
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   text-transform: capitalize;
 }
-
 
 /*********** FAVORITE BUTTON ************/
 .fav-btn {
@@ -351,6 +356,7 @@ body.dark #searchInput::placeholder {
   cursor: pointer;
   opacity: 0.55;
   transition: all 0.2s ease;
+  margin-left: auto;
 }
 
 .fav-btn:hover {
@@ -363,29 +369,54 @@ body.dark #searchInput::placeholder {
   opacity: 1;
 }
 
-.tool-card.trending {
-  border: 1px solid #ffb94d;
-  box-shadow: 0 0 0 3px rgba(255,180,70,0.15),
-              0 6px 20px rgba(255,150,30,0.08);
+/********************************
+   FILTER BUTTON
+*********************************/
+#filter {
+  width: 60px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25),
+    0 4px 18px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(14px);
+  background-color: rgb(255 255 255 / 35%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
-/****************************************
+.filter-img {
+  width: 80%;
+  height: 80%;
+}
+
+
+/********************************
    DARK MODE
-*****************************************/
+*********************************/
 body.dark {
   background: #0f1116;
   color: #e5e5e5;
   transition: all 0.25s ease;
 }
 
-/************* Toggle button *************/
+body.dark #filter {
+  background-color: rgba(40, 40, 40, 0.55);
+}
+
+body.dark .filter-img {
+  filter: invert();
+}
+
+/************* Toggle *************/
 .theme-toggle {
   position: fixed;
   top: 16px;
   right: 18px;
-  background: rgba(255,255,255,0.55);
+  background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.25);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   padding: 8px 12px;
   border-radius: 12px;
   font-size: 18px;
@@ -395,50 +426,45 @@ body.dark {
 }
 
 body.dark .theme-toggle {
-  background: rgba(40,40,40,0.55);
-  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(40, 40, 40, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
-
 
 /************* Search *************/
 body.dark #searchInput {
-  background: rgba(40,40,40,0.55);
+  background: rgba(40, 40, 40, 0.55);
   color: #f1f1f1;
-  border-color: rgba(255,255,255,0.15);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 body.dark #searchInput::placeholder {
   color: #bbb;
 }
 
-
 /************* Categories *************/
 body.dark .category-btn {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: #eee;
-  border-color: rgba(255,255,255,0.15);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 body.dark .category-btn.active {
-  background: rgba(26,115,232,0.25);
+  background: rgba(26, 115, 232, 0.25);
   border-color: #1a73e8;
   color: #fff;
 }
 
-
 /************* Tool cards *************/
 body.dark .tool-card {
-  background: rgba(30,30,35,0.65);
-  border: 1px solid rgba(255,255,255,0.12);
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.1),
-    0 4px 14px rgba(0,0,0,0.3);
+  background: rgba(30, 30, 35, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 4px 14px rgba(0, 0, 0, 0.3);
 }
 
 body.dark .tool-card:hover {
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.2),
-    0 6px 22px rgba(0,0,0,0.45);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+    0 6px 22px rgba(0, 0, 0, 0.45);
 }
 
 body.dark .tool-title {
@@ -447,8 +473,8 @@ body.dark .tool-title {
 
 /************* Tags *************/
 body.dark .tag {
-  background: rgba(255,255,255,0.12);
-  border-color: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.08);
   color: #ddd;
 }
 
@@ -458,7 +484,7 @@ body.dark .tag {
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
@@ -472,11 +498,11 @@ body.dark .tag {
 }
 
 .modal-content {
-  background: rgba(255,255,255,0.8);
+  background: rgba(255, 255, 255, 0.8);
   padding: 26px 24px;
   border-radius: 18px;
   width: 360px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(14px);
   text-align: center;
   position: relative;
@@ -490,6 +516,7 @@ body.dark .tag {
   cursor: pointer;
   opacity: 0.6;
 }
+
 .modal-close:hover {
   opacity: 1;
 }
@@ -528,13 +555,13 @@ body.dark .tag {
   border-radius: 10px;
   cursor: pointer;
 }
+
 .modal-visit:hover {
   background: #0d5dc5;
 }
 
-/******** DARK MODE ********/
 body.dark .modal-content {
-  background: rgba(38,38,42,0.85);
+  background: rgba(38, 38, 42, 0.85);
   color: #eee;
 }
 
@@ -545,44 +572,29 @@ body.dark .modal-content {
   font-size: 12px;
   padding: 2px 8px;
   border-radius: 10px;
-  border: 1px solid rgba(0,0,0,0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   text-transform: capitalize;
   margin-top: 4px;
 }
 
-/* FREE */
 .pricing.free {
   background: #d9fbd0;
   color: #2c7a00;
 }
 
-/* FREEMIUM */
 .pricing-tag.freemium {
   background: #fff4cd;
   color: #8c6a00;
 }
 
-/* PAID */
 .pricing-tag.paid {
   background: #ffe2e2;
   color: #9b0000;
 }
 
-/********************************
-   MODAL PRICING STYLE
-*********************************/
-.modal-pricing {
-  display: inline-block;
-  font-size: 14px;
-  padding: 6px 12px;
-  border-radius: 12px;
-  margin-top: 12px;
-  text-transform: capitalize;
-}
-
-/* Dark theme overrides */
+/* Dark theme pricing */
 body.dark .pricing-tag {
-  border-color: rgba(255,255,255,0.1);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 body.dark .pricing-tag.free {
