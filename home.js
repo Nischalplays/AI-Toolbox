@@ -31,6 +31,7 @@ let activeCategory = "All";
 let favorites = [];
 let sortEventAdded = false;
 let filterWinOpen = false;
+let defaultSet = false;
 
 /* ===============================
    THEME
@@ -58,24 +59,26 @@ function applyTheme() {
 
 function sortEvent() {
   if (sortEventAdded != false) return;
-  
+
   modalSortBtns.forEach((btn, index) => {
-    btn.addEventListener("click", ()=> {
-      const currenActive = sortBar.querySelector(".active");
-      currenActive.classList.remove("active");
+    btn.addEventListener("click", () => {
+      const prevActive = sortBar.querySelector(".active");
+      let currentActive = btn.classList.contains("active");
+      prevActive.classList.remove("active");
       btn.classList.add("active");
+      sortTool(btn.id, currentActive);
     })
   })
   sortEventAdded = true;
-} 
+}
 
-function filterEvent(){
-  filterBtn.addEventListener("click", ()=>{
-    if (filterWinOpen){
+function filterEvent() {
+  filterBtn.addEventListener("click", () => {
+    if (filterWinOpen) {
       filterWin.classList.remove("active");
       filterWinOpen = false
     }
-    else{
+    else {
       filterWin.classList.add("active");
       filterWinOpen = true;
     }
@@ -136,7 +139,7 @@ function renderCategories() {
     btn.onclick = () => {
       activeCategory = c;
       renderCategories();
-      renderTools(); // need to change 
+      filterCategory();
     };
 
     categoryBar.appendChild(btn);
@@ -240,12 +243,86 @@ modal.onclick = (e) => {
 };
 
 /* ===============================
+   Create Card
+================================ */
+
+function createToolCard(tool) {
+  const card = document.createElement("div");
+  card.className = "tool-card";
+
+  if (tool.trending) card.classList.add("trending");
+
+  // ICON
+  const img = buildIcon(tool);
+
+  // TEXT BOX
+  const textBox = document.createElement("div");
+  textBox.className = "tool-text";
+
+  const title = document.createElement("div");
+  title.className = "tool-title";
+  title.textContent = tool.name;
+
+  // TAGS
+  const tagsBox = document.createElement("div");
+  tagsBox.className = "tags";
+
+  tool.tags.forEach(tag => {
+    const t = document.createElement("span");
+    t.className = "tag";
+    t.textContent = tag;
+    tagsBox.appendChild(t);
+  });
+
+  // PRICING (auto default → free)
+  const pricing = tool.pricing || "free";
+  const price = document.createElement("span");
+  price.className = `tag pricing ${pricing}`;
+  price.textContent = pricing;
+  tagsBox.appendChild(price);
+
+  // FAVORITE BUTTON
+  const favBtn = document.createElement("div");
+  favBtn.className = "fav-btn";
+  const isFav = favorites.includes(tool.name);
+  favBtn.textContent = isFav ? "⭐" : "☆";
+  if (isFav) favBtn.classList.add("active");
+
+  favBtn.onclick = (e) => {
+    e.stopPropagation();
+    favCard(card)
+  }
+
+  textBox.appendChild(title);
+  textBox.appendChild(tagsBox);
+
+  card.appendChild(img);
+  card.appendChild(textBox);
+  card.appendChild(favBtn);
+
+  // Click → modal
+  card.onmousedown = (event) => {
+    if (event.target.closest('.fav-btn')) return;
+    if (event.button === 0) {
+      openToolModal(tool, card)
+    }
+    else if (event.button === 2) {
+      favCard(card);
+    }
+  };
+
+  container.appendChild(card);
+}
+
+
+/* ===============================
    Render Tools
 ================================ */
 function renderTools() {
   container.innerHTML = "";
   filterEvent();
   sortEvent();
+
   const q = searchInput.value.toLowerCase();
 
   const filtered = tools.filter(tool => {
@@ -268,72 +345,9 @@ function renderTools() {
   });
 
   filtered.forEach(tool => {
-    const card = document.createElement("div");
-    card.className = "tool-card";
-
-    if (tool.trending) card.classList.add("trending");
-
-    // ICON
-    const img = buildIcon(tool);
-
-    // TEXT BOX
-    const textBox = document.createElement("div");
-    textBox.className = "tool-text";
-
-    const title = document.createElement("div");
-    title.className = "tool-title";
-    title.textContent = tool.name;
-
-    // TAGS
-    const tagsBox = document.createElement("div");
-    tagsBox.className = "tags";
-
-    tool.tags.forEach(tag => {
-      const t = document.createElement("span");
-      t.className = "tag";
-      t.textContent = tag;
-      tagsBox.appendChild(t);
-    });
-
-    // PRICING (auto default → free)
-    const pricing = tool.pricing || "free";
-    const price = document.createElement("span");
-    price.className = `tag pricing ${pricing}`;
-    price.textContent = pricing;
-    tagsBox.appendChild(price);
-
-    // FAVORITE BUTTON
-    const favBtn = document.createElement("div");
-    favBtn.className = "fav-btn";
-    const isFav = favorites.includes(tool.name);
-    favBtn.textContent = isFav ? "⭐" : "☆";
-    if (isFav) favBtn.classList.add("active");
-
-    favBtn.onclick = (e) => {
-      e.stopPropagation();
-      favCard(card)
-    }
-
-    textBox.appendChild(title);
-    textBox.appendChild(tagsBox);
-
-    card.appendChild(img);
-    card.appendChild(textBox);
-    card.appendChild(favBtn);
-
-    // Click → modal
-    card.onmousedown = (event) => {
-      if (event.target.closest('.fav-btn')) return;
-      if (event.button === 0) {
-        openToolModal(tool, card)
-      }
-      else if (event.button === 2) {
-        favCard(card);
-      }
-    };
-
-    container.appendChild(card);
+    createToolCard(tool);
   });
+  const defaultCards = Array.from(container.children);
 }
 
 // ======== Fav Crad ========
@@ -354,7 +368,7 @@ function favCard(card) {
     favBtn.classList.remove("active");
 
     console.log("hello")
-    if (currentCategory.includes("favorites")|| currentCategory.includes("favourites")) {
+    if (currentCategory.includes("favorites") || currentCategory.includes("favourites")) {
       card.remove();
     }
   }
@@ -368,18 +382,77 @@ function favCard(card) {
 }
 
 /* ============================
+    Sort TOOL
+==============================*/
+
+function sortTool(id, currentActive) {
+  if (currentActive) return;
+
+  const cards = Array.from(container.children);
+  console.log(activeCategory);
+
+  if (id === "ascending") {
+    cards.sort((a, b) =>
+      a.querySelector(".tool-title").textContent.trim().localeCompare(
+        b.querySelector(".tool-title").textContent.trim()
+      )
+    );
+  } else if (id === "descending") {
+    cards.sort((a, b) =>
+      b.querySelector(".tool-title").textContent.trim().localeCompare(
+        a.querySelector(".tool-title").textContent.trim()
+      )
+    );
+  } else if (id === "default") {
+    const defaultOrder = tools.map(t => t.name);
+    cards.sort((a, b) => {
+      const nameA = a.querySelector(".tool-title").textContent.trim();
+      const nameB = b.querySelector(".tool-title").textContent.trim();
+      return defaultOrder.indexOf(nameA) - defaultOrder.indexOf(nameB);
+    });
+  }
+
+  cards.forEach(card => container.appendChild(card));
+}
+
+/* ============================
     FILTER TOOL
 ==============================*/
-function filterTools(){
+function filterTools() {
   const q = searchInput.value.toLowerCase();
 
-  document.querySelectorAll(".tool-card").forEach(card =>{
+  document.querySelectorAll(".tool-card").forEach(card => {
     const title = card.querySelector(".tool-title").textContent.toLowerCase();
     const tags = Array.from(card.querySelectorAll(".tag")).map(t => t.textContent.toLowerCase());
 
     const matches = title.includes(q) || tags.some(tag => tag.includes(q));
 
     card.style.display = matches ? "" : "none";
+  })
+}
+
+function filterCategory(){
+  document.querySelectorAll(".tool-card").forEach(card =>{
+    // const title = card.querySelector(".tool-title").textContent.trim();
+    const tags = Array.from(card.querySelectorAll(".tag")).map(t=> t.textContent.toLowerCase().trim());
+
+    let matches = tags.some(tag => tag.includes(activeCategory));
+    const categroyName = activeCategory.toLowerCase().replace(/[^a-z]/g, "");
+    console.log(categroyName);
+
+    if(categroyName === "all"){
+      card.style.display = "";
+      return;
+    }
+    else if(categroyName === "trending"){
+      matches = card.classList.contains("trending");
+    }
+    else if(categroyName === "favorites"){
+      const fav_btn = card.querySelector(".fav-btn");
+      matches = fav_btn.classList.contains("active");
+    }
+
+    card.style.display =  matches ? "" : "none";
   })
 }
 

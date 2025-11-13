@@ -238,9 +238,6 @@ header {
   color: #1a73e8;
 }
 
-body.dark #filter-win {
-  /* background: rgba(40, 40, 40, 0.55); */
-}
 
 body.dark #filter-content {
   background: rgba(30, 30, 35, 0.65);
